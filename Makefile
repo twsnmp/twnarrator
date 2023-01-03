@@ -23,7 +23,7 @@ clean:
 	rm -rf $(TARGETS) $(DIST)/*.zip
 mac: $(DIST)/twnarrator.app
 zip: $(TARGETS)
-	cd dist && $(ZIP) twnarrator.zip twnarrator.exe wnarrator.app
+	cd dist && $(ZIP) twnarrator.zip twnarrator.exe twnarrator.app
 
 
 ### 実行ファイルのビルドルール
