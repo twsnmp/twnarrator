@@ -1,7 +1,7 @@
 .PHONY: all test clean zip mac
 
 ### バージョンの定義
-VERSION     := "v1.0.0"
+VERSION     := "v1.1.0"
 COMMIT      := $(shell git rev-parse --short HEAD)
 
 ### コマンドの定義
