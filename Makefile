@@ -13,7 +13,7 @@ ZIP          = zip
 
 ### ターゲットパラメータ
 DIST = dist
-SRC = ./main.go
+SRC = ./main.go ./mac.go
 TARGETS     = $(DIST)/twnarrator.exe $(DIST)/twnarrator.app
 GO_PKGROOT  = ./...
 

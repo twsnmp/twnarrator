@@ -12,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
@@ -66,6 +67,7 @@ var url = "http://localhost:50021"
 var script = ""
 var list = false
 var play = false
+var mac = false
 var version = "vx.x.x"
 var commit = ""
 
@@ -152,11 +154,22 @@ func main() {
 	flag.StringVar(&script, "s", "", "input script(txt or pptx")
 	flag.BoolVar(&list, "l", false, "list speaker")
 	flag.BoolVar(&play, "p", false, "play")
+	flag.BoolVar(&mac, "mac", false, "mac mode")
 	flag.Parse()
-	getSpeakers()
-	if list {
-		showSpeakers()
-		return
+	if mac {
+		if runtime.GOOS != "darwin" {
+			log.Fatalln("not Mac OS")
+		}
+		if list {
+			showMacVoices()
+			return
+		}
+	} else {
+		getSpeakers()
+		if list {
+			showSpeakers()
+			return
+		}
 	}
 	log.Printf("version=%s(%s)", version, commit)
 	st := time.Now()
@@ -171,6 +184,7 @@ type config struct {
 	intonation float64
 	volume     float64
 	pitch      float64
+	voice      string
 }
 
 func playScript(file string) {
@@ -226,6 +240,9 @@ func playScript(file string) {
 }
 
 func speak(cfg config, l string) ([]byte, error) {
+	if mac {
+		return speakMac(cfg, l)
+	}
 	spk := speakers[cfg.speaker]
 	spkID := spk.Styles[cfg.style].ID
 	params, err := getQuery(spkID, l)
@@ -247,6 +264,9 @@ func speak(cfg config, l string) ([]byte, error) {
 }
 
 func getConfig(l string) config {
+	if mac {
+		return getConfigMac(l)
+	}
 	ret := config{
 		speaker:    0,
 		style:      0,
@@ -254,6 +274,7 @@ func getConfig(l string) config {
 		intonation: 1.0,
 		volume:     1.0,
 		pitch:      0.0,
+		voice:      "",
 	}
 	l = strings.ReplaceAll(l, "#", "")
 	p := strings.Split(l, ",")
